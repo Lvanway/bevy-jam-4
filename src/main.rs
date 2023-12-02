@@ -4,16 +4,23 @@
 // Feel free to delete this line.
 #![allow(clippy::too_many_arguments, clippy::type_complexity)]
 
-use bevy::prelude::*;
+use bevy::{
+    core_pipeline::{
+        bloom::BloomSettings,
+        tonemapping::Tonemapping,
+    },
+    prelude::*,
+    sprite::MaterialMesh2dBundle,
+};
 
 const LEFT_WALL: f32 = -450.;
 const RIGHT_WALL: f32 = 450.;
 const BOTTOM_WALL: f32 = -300.;
 const TOP_WALL: f32 = 300.;
 
-const PLAYER_SIZE: Vec3 = Vec3::new(20.0, 20.0, 0.0);
+const PLAYER_SIZE: f32 = 20.0;
 const PLAYER_SPEED: f32 = 500.0;
-const PLAYER_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
+const PLAYER_COLOR: Color = Color::rgb(0.3, 0.3, 10.7);
 
 fn main() {
     App::new()
@@ -23,27 +30,36 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle::default());
+fn setup(
+    mut commands: Commands,     
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    asset_server: Res<AssetServer>) {
+
+    commands.spawn((
+        Camera2dBundle {
+            camera: Camera {
+                hdr: true,
+                ..default()
+            },
+            tonemapping: Tonemapping::TonyMcMapface,
+            ..default()
+        },
+        BloomSettings::default(),
+    ));
+    
     commands.spawn(SpriteBundle {
         texture: asset_server.load("icon.png"),
         ..Default::default()
     });
 
-    commands.spawn((
-        SpriteBundle {
-            transform: Transform {
-                translation: Vec3::new(0.0, 0.0, 0.0),
-                scale: PLAYER_SIZE,
-                ..default()
-            },
-            sprite: Sprite {
-                color: PLAYER_COLOR,
-                ..default()
-            },
-            ..default()
-        },
-        Player,
+    commands.spawn((MaterialMesh2dBundle {
+        mesh: meshes.add(shape::Circle::new(PLAYER_SIZE).into()).into(),
+        material: materials.add(ColorMaterial::from(PLAYER_COLOR)),
+        transform: Transform::from_translation(Vec3::new(-200., 0., 0.)),
+        ..default()
+        }, 
+        Player
     ));
 }
 
@@ -83,10 +99,10 @@ fn move_player(
 
     // // Update the player position,
     // // making sure it doesn't cause the player to leave the arena
-    let left_bound = LEFT_WALL + PLAYER_SIZE.x / 2.0;
-    let right_bound = RIGHT_WALL - PLAYER_SIZE.x / 2.0;
-    let top_bound = TOP_WALL - PLAYER_SIZE.x / 2.0;
-    let bottom_bound = BOTTOM_WALL + PLAYER_SIZE.x / 2.0;
+    let left_bound = LEFT_WALL + PLAYER_SIZE / 2.0;
+    let right_bound = RIGHT_WALL - PLAYER_SIZE / 2.0;
+    let top_bound = TOP_WALL - PLAYER_SIZE / 2.0;
+    let bottom_bound = BOTTOM_WALL + PLAYER_SIZE / 2.0;
 
     player_transform.translation.x = new_player_position_x.clamp(left_bound, right_bound);
     player_transform.translation.y = new_player_position_y.clamp(bottom_bound, top_bound);
