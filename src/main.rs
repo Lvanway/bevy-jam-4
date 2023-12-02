@@ -81,8 +81,8 @@ fn move_player(
     let new_player_position_y =
         player_transform.translation.y + direction_y * PLAYER_SPEED * time.delta_seconds();
 
-    // // Update the paddle position,
-    // // making sure it doesn't cause the paddle to leave the arena
+    // // Update the player position,
+    // // making sure it doesn't cause the player to leave the arena
     let left_bound = LEFT_WALL + PLAYER_SIZE.x / 2.0;
     let right_bound = RIGHT_WALL - PLAYER_SIZE.x / 2.0;
     let top_bound = TOP_WALL - PLAYER_SIZE.x / 2.0;
