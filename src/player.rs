@@ -56,19 +56,19 @@ fn move_player(
     let mut direction_x = 0.0;
     let mut direction_y = 0.0;
 
-    if keyboard_input.pressed(KeyCode::Left) {
+    if keyboard_input.pressed(KeyCode::A) {
         direction_x -= 1.0;
     }
 
-    if keyboard_input.pressed(KeyCode::Right) {
+    if keyboard_input.pressed(KeyCode::D) {
         direction_x += 1.0;
     }
 
-    if keyboard_input.pressed(KeyCode::Down) {
+    if keyboard_input.pressed(KeyCode::S) {
         direction_y -= 1.0;
     }
 
-    if keyboard_input.pressed(KeyCode::Up) {
+    if keyboard_input.pressed(KeyCode::W) {
         direction_y += 1.0;
     }
 
