@@ -28,9 +28,7 @@ mod game;
 fn main() {
     App::new()
         .add_plugins((
-            DefaultPlugins.set(RenderPlugin {
-                render_creation: RenderCreation::Automatic(WgpuSettings{backends: Some(Backends::VULKAN), ..default()})
-            }),
+            DefaultPlugins,
             GamePlugin,
             MenuPlugin,
             SplashPlugin
