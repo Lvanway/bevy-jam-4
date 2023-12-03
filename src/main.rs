@@ -6,7 +6,7 @@ use bevy::{
         tonemapping::Tonemapping,
     },
     prelude::*,
-    sprite::MaterialMesh2dBundle,
+    sprite::MaterialMesh2dBundle, render::{RenderPlugin, settings::{RenderCreation, WgpuSettings, Backends}},
 };
 use enemy::EnemyPlugin;
 use game::GamePlugin;
@@ -28,7 +28,9 @@ mod game;
 fn main() {
     App::new()
         .add_plugins((
-            DefaultPlugins,
+            DefaultPlugins.set(RenderPlugin {
+                render_creation: RenderCreation::Automatic(WgpuSettings{backends: Some(Backends::VULKAN), ..default()})
+            }),
             GamePlugin,
             MenuPlugin,
             SplashPlugin
