@@ -1,5 +1,7 @@
 use bevy::{app::AppExit, prelude::*};
 
+use crate::{despawn_all, player::Player, health::Health};
+
 use super::{despawn_with_component, DisplayQuality, GameState, Volume, TEXT_COLOR};
 
 // This plugin manages the menu, with 5 different screens:
@@ -12,8 +14,7 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_state::<MenuState>()
-            .add_systems(OnEnter(GameState::Menu), menu_setup)
-            .add_systems(OnEnter(MenuState::Main), main_menu_setup)
+            .add_systems(OnEnter(GameState::Menu), (despawn_with_component::<Health>, menu_setup, main_menu_setup).chain())
             .add_systems(OnExit(MenuState::Main), despawn_with_component::<OnMainMenuScreen>)
             .add_systems(Update, (menu_action, button_system).chain().run_if(in_state(GameState::Menu)));
     }

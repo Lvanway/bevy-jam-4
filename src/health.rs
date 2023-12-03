@@ -29,8 +29,10 @@ pub struct Health {
 
 
 
-fn check_player_loss(query: Query<&Health, With<Player>>) {
+fn check_player_loss(query: Query<&Health, With<Player>>,
+    mut game_state: ResMut<NextState<GameState>>
+) {
     if query.single().hit_points <= 0 {
-        println!("PLAYER LOST!");
+        game_state.set(GameState::GameLost);
     }
 }

@@ -8,7 +8,7 @@ use bevy::{
     sprite::MaterialMesh2dBundle,
 };
 use rand::Rng;
-use crate::{game::{LEFT_WALL, RIGHT_WALL, TOP_WALL, BOTTOM_WALL}, GameState};
+use crate::{game::{LEFT_WALL, RIGHT_WALL, TOP_WALL, BOTTOM_WALL}, GameState, player, health::Health};
 use super::player::Player;
 
 pub struct EnemyPlugin;
@@ -21,7 +21,8 @@ impl Plugin for EnemyPlugin {
         })
         .add_systems(FixedUpdate, (
             move_enemy, 
-            spawn_enemy
+            spawn_enemy,
+            enemy_damage_player
         ).chain().run_if(in_state(GameState::Game)));
     }
 }
@@ -32,6 +33,7 @@ const ENEMY_COLOR: Color = Color::rgb(10.7, 0.3, 0.3);
 const ENEMY_SPAWN_PER_INTERVAL: u32 = 25;
 const ENEMY_MIN_SPAWN_DISTANCE: f32 = 100.0;
 pub const ENEMY_SPAWN_INTERVAL_SECONDS: u32 = 1;
+pub const ENEMY_DAMAGE: u32 = 10;
 
 
 #[derive(Component)]
@@ -61,6 +63,25 @@ fn move_enemy(
         }
 }
 
+
+fn enemy_damage_player(
+    mut commands: Commands,
+    mut query: ParamSet<(
+        Query<(&Transform, &mut Health, With<Player>)>,
+        Query<(Entity, &Transform, With<Enemy>)>)>) {
+        let player_position = query.p0().single().0.translation.clone();
+
+        let mut player_hits = 0;
+        for (enemy_entity, enemy_transform, _) in query.p1().iter_mut() {
+            let distance = enemy_transform.translation.distance(player_position);
+            if distance < player::PLAYER_SIZE {
+                commands.entity(enemy_entity).despawn();
+                player_hits += 1;
+            }
+        }
+        query.p0().single_mut().1.hit_points -= player_hits * ENEMY_DAMAGE;
+}
+
 fn spawn_enemy(mut commands: Commands, 
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -88,7 +109,8 @@ fn spawn_enemy(mut commands: Commands,
                         transform: Transform::from_translation(Vec3::new(x, y, 0.)),
                         ..default()
                         }, 
-                        Enemy
+                        Enemy,
+                        Health { hit_points: 100}
                     ));
                 }
             }

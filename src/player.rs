@@ -12,7 +12,7 @@ use crate::{game::{LEFT_WALL, RIGHT_WALL, TOP_WALL, BOTTOM_WALL}, GameState};
 
 use super::health::Health;
 
-const PLAYER_SIZE: f32 = 20.0;
+pub const PLAYER_SIZE: f32 = 20.0;
 const PLAYER_SPEED: f32 = 500.0;
 const PLAYER_COLOR: Color = Color::rgb(0.3, 0.3, 10.7);
 const PLAYER_INITIAL_HIT_POINTS: u32 = 100;
